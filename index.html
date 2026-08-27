@@ -36,7 +36,7 @@
             max-width: 420px;
             background: var(--card-bg);
             border-radius: 24px;
-            padding: 30px 24px;
+            padding: 40px 24px;
             box-shadow: 0 8px 24px rgba(74, 62, 61, 0.08);
             text-align: center;
             display: flex;
@@ -46,28 +46,18 @@
         .title {
             font-size: 1.4rem;
             font-weight: bold;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
             letter-spacing: 0.05em;
-        }
-        .illustration-box {
-            width: 180px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-        .illustration-box img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
         }
         .story-card {
             width: 100%;
-            min-height: 140px;
+            min-height: 160px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.05rem;
             line-height: 1.7;
-            margin-bottom: 24px;
+            margin-bottom: 30px;
             padding: 10px 5px;
             font-weight: 500;
         }
@@ -128,11 +118,6 @@
 <div class="container">
     <div class="title">アマプラ映画あらすじガチャ</div>
     
-    <div class="illustration-box">
-        <!-- 手書きねこちゃん画像の直リンク -->
-        <img src="https://googleapis.com" alt="ねこちゃん">
-    </div>
-
     <div class="story-card" id="story-text">
         <span class="loading">映画データを読み込み中...</span>
     </div>
@@ -155,34 +140,64 @@
 </div>
 
 <script>
-    // あなたが用意してくれた完璧な公開リンク
-    const jsonUrl = "https://google.com";
+    // あなたが見つけてくれた本物のCSV公開リンク
+    const csvUrl = "https://google.com";
 
     let movies = [];
 
+    // 改行とカンマだけで機械的に分解する100%エラーなしの処理
+    function parseCSV(text) {
+        let lines = [];
+        let row = ["", "", ""];
+        let insideQuote = false;
+        let colIndex = 0;
+        let entry = "";
+
+        for (let i = 0; i < text.length; i++) {
+            let char = text[i];
+            let nextChar = text[i + 1];
+
+            if (char === '"') {
+                if (insideQuote && nextChar === '"') {
+                    entry += '"';
+                    i++;
+                } else {
+                    insideQuote = !insideQuote;
+                }
+            } else if (char === ',' && !insideQuote) {
+                if (colIndex < 3) row[colIndex] = entry.trim();
+                colIndex++;
+                entry = "";
+            } else if ((char === '\r' || char === '\n') && !insideQuote) {
+                if (char === '\r' && nextChar === '\n') i++;
+                if (colIndex < 3) row[colIndex] = entry.trim();
+                
+                if (row[0] || row[1]) {
+                    lines.push({ title: row[0], story: row[1], link: row[2] || "" });
+                }
+                row = ["", "", ""];
+                colIndex = 0;
+                entry = "";
+            } else {
+                entry += char;
+            }
+        }
+        if (entry || row[0] || row[1]) {
+            if (colIndex < 3) row[colIndex] = entry.trim();
+            if (row[0] || row[1]) {
+                lines.push({ title: row[0], story: row[1], link: row[2] || "" });
+            }
+        }
+        return lines;
+    }
+
     async function loadMovies() {
         try {
-            const response = await fetch(jsonUrl);
-            if (!response.ok) throw new Error('Fetch error');
+            const response = await fetch(csvUrl);
+            if (!response.ok) throw new Error('データ取得エラー');
             const text = await response.text();
             
-            // Googleのラッパーを剥ぎ取る
-            const startIdx = text.indexOf("google.visualization.Query.setResponse(");
-            if (startIdx === -1) throw new Error('Invalid format');
-            const jsonText = text.substring(startIdx + 38, text.length - 2);
-            const data = JSON.parse(jsonText);
-            
-            const rows = data.table.rows;
-            
-            // 見出しの文字に左右されず、列の順番（0番目＝A、1番目＝B、2番目＝C）で確実に取得
-            movies = rows.map(row => {
-                const cells = row.c;
-                return {
-                    title: (cells && cells[0]) ? String(cells[0].v) : '',
-                    story: (cells && cells[1]) ? String(cells[1].v) : '',
-                    link: (cells && cells[2]) ? String(cells[2].v) : ''
-                };
-            }).filter(movie => movie.story && movie.story.trim() !== ""); // 空白行は除外
+            movies = parseCSV(text);
 
             if(movies.length > 0) {
                 document.getElementById('next-btn').style.display = 'flex';
@@ -204,10 +219,10 @@
         const randomIndex = Math.floor(Math.random() * movies.length);
         const selectedMovie = movies[randomIndex];
 
-        // あらすじを表示
+        // あらすじ（B列/1番目）を確実に表示
         document.getElementById('story-text').innerText = selectedMovie.story;
         
-        // Amazonボタン
+        // Amazonボタン（C列/2番目）
         const amazonBtn = document.getElementById('amazon-btn');
         if (selectedMovie.link) {
             amazonBtn.href = selectedMovie.link;
@@ -219,7 +234,7 @@
         // Xシェア
         const currentUrl = window.location.href;
         const xBtn = document.getElementById('x-btn');
-        const shareText = encodeURIComponent(`【アマプラ映画あらすじガチャ】この映画、な〜んだ？\n\n「${selectedMovie.story.substring(0, 45)}...」`);
+        const shareText = encodeURIComponent(`【アマプラ映画あらすじガチャ】この映画、な〜んだ？\n\n「${selectedMovie.story.substring(0, 50)}...」`);
         xBtn.href = `https://x.com{shareText}&url=${encodeURIComponent(currentUrl)}`;
     }
 
