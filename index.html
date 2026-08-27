@@ -74,28 +74,10 @@
             letter-spacing: 0.05em;
         }
 
-        /* ねこちゃん */
-        .illustration-box {
-            width: 180px;
-            height: 180px;
+        /* =====================================================
+           あらすじ
+           ===================================================== */
 
-            margin-bottom: 20px;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .illustration-box img {
-            width: 100%;
-            height: 100%;
-
-            object-fit: contain;
-
-            display: block;
-        }
-
-        /* あらすじ */
         .story-card {
             width: 100%;
             min-height: 140px;
@@ -129,7 +111,10 @@
             line-height: 1.7;
         }
 
-        /* ボタン共通 */
+        /* =====================================================
+           ボタン共通
+           ===================================================== */
+
         .btn {
             width: 100%;
 
@@ -162,7 +147,10 @@
             transform: scale(0.98);
         }
 
-        /* Amazon */
+        /* =====================================================
+           Amazon
+           ===================================================== */
+
         .btn-main {
             background-color: var(--btn-main);
             color: white;
@@ -172,7 +160,10 @@
             background-color: var(--btn-main-hover);
         }
 
-        /* ガチャ */
+        /* =====================================================
+           ガチャ
+           ===================================================== */
+
         .btn-gacha {
             background-color: var(--btn-gacha);
             color: #4a3e3d;
@@ -182,7 +173,10 @@
             background-color: var(--btn-gacha-hover);
         }
 
-        /* X */
+        /* =====================================================
+           X
+           ===================================================== */
+
         .btn-x {
             background-color: var(--btn-x);
             color: white;
@@ -193,7 +187,10 @@
             background-color: var(--btn-x-hover);
         }
 
-        /* 投稿 */
+        /* =====================================================
+           投稿
+           ===================================================== */
+
         .btn-secondary {
             background-color: transparent;
             color: #8c7e7d;
@@ -210,42 +207,83 @@
             background-color: #fff9f5;
         }
 
+        /* =====================================================
+           ねこちゃん
+           ===================================================== */
+
+        .illustration-box {
+            width: 240px;
+            height: 240px;
+
+            margin-top: 24px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .illustration-box img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            display: block;
+        }
+
+        /* =====================================================
+           非表示
+           ===================================================== */
+
         .hidden {
             display: none !important;
         }
 
+        /* =====================================================
+           ステータス
+           ===================================================== */
+
         .status {
             font-size: 0.75rem;
             color: #aaa09d;
-            margin-top: 8px;
+
+            margin-top: 12px;
         }
+
     </style>
 </head>
+
 
 <body>
 
 <div class="container">
 
+    <!-- =====================================================
+         タイトル
+         ===================================================== -->
+
     <div class="title">
         アマプラ映画あらすじガチャ
     </div>
 
-    <!-- ねこちゃん -->
-    <div class="illustration-box">
-        <img
-            src="./HQteOS-bIAAoMx5.jpe"
-            alt="ねこちゃん"
-        >
-    </div>
 
-    <!-- あらすじ -->
+    <!-- =====================================================
+         あらすじ
+         ===================================================== -->
+
     <div class="story-card" id="story-text">
+
         <span class="loading">
             映画データを読み込み中……
         </span>
+
     </div>
 
-    <!-- Amazon -->
+
+    <!-- =====================================================
+         Amazonボタン
+         ===================================================== -->
+
     <a
         href="#"
         target="_blank"
@@ -256,7 +294,11 @@
         <span>▷ この映画をみる</span>
     </a>
 
-    <!-- 次の映画 -->
+
+    <!-- =====================================================
+         次の映画
+         ===================================================== -->
+
     <button
         id="next-btn"
         class="btn btn-gacha hidden"
@@ -265,7 +307,11 @@
         <span>🎲 次の映画を引く！</span>
     </button>
 
-    <!-- X -->
+
+    <!-- =====================================================
+         X
+         ===================================================== -->
+
     <a
         href="#"
         target="_blank"
@@ -273,12 +319,16 @@
         id="x-btn"
         class="btn btn-x hidden"
     >
-        <span>𝕏 ガチャの結果をシェアする</span>
+        <span>𝕏 結果をツイートする</span>
     </a>
 
-    <!-- 映画投稿フォーム -->
+
+    <!-- =====================================================
+         映画投稿フォーム
+         ===================================================== -->
+
     <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLScRD2arhC8d55o3ng6GmWRBbUMBCT0n1Vlcb0qUKG9cUIaNmg/viewform"
+        href="https://docs.google.com/forms/d/e/1FAIpQLScRD2arC8d55o3ng6GmWRBbUMBCT0n1Vlcb0qUKG9cUIaNmg/viewform"
         target="_blank"
         rel="noopener noreferrer"
         class="btn btn-secondary"
@@ -286,12 +336,30 @@
         <span>✎ 好きな映画のあらすじを投稿する</span>
     </a>
 
+
+    <!-- ステータス -->
+
     <div id="status" class="status"></div>
+
+
+    <!-- =====================================================
+         ねこちゃん
+         ===================================================== -->
+
+    <div class="illustration-box">
+
+        <img
+            src="./HQteOS-bIAAoMx5.jpe"
+            alt="ねこちゃん"
+        >
+
+    </div>
 
 </div>
 
 
 <script>
+
     /*
      * =========================================================
      * Googleスプレッドシートの公開CSV
@@ -305,19 +373,24 @@
     /*
      * =========================================================
      * Googleフォームの質問文
-     *
-     * スプレッドシートの1行目にある見出しを探して、
-     * その列をタイトル・あらすじ・Amazonリンクとして使う。
      * =========================================================
      */
 
-    const TITLE_HEADER = "映画のタイトルを教えてね";
+    const TITLE_HEADER =
+        "映画のタイトルを教えてね";
 
-    const STORY_HEADER = "あらすじを80～140字くらいで教えてね";
+    const STORY_HEADER =
+        "あらすじを80～140字くらいで教えてね";
 
     const LINK_HEADER =
         "Amazonプライムの映画リンクを貼ってくれるとめちゃくちゃ助かります";
 
+
+    /*
+     * =========================================================
+     * 映画データ
+     * =========================================================
+     */
 
     let movies = [];
 
@@ -328,8 +401,7 @@
      * =========================================================
      * CSV解析
      *
-     * あらすじの中に
-     * 「,」や改行があっても壊れにくいように解析する。
+     * カンマや改行を含むセルにも対応。
      * =========================================================
      */
 
@@ -342,27 +414,29 @@
 
         let insideQuote = false;
 
+
         for (let i = 0; i < text.length; i++) {
 
             const char = text[i];
             const next = text[i + 1];
 
+
             /*
              * ダブルクォーテーション
              */
+
             if (char === '"') {
 
-                /*
-                 * "" はエスケープされた "
-                 */
                 if (insideQuote && next === '"') {
 
                     cell += '"';
+
                     i++;
 
                 } else {
 
                     insideQuote = !insideQuote;
+
                 }
 
                 continue;
@@ -372,9 +446,11 @@
             /*
              * カンマ
              */
+
             if (char === "," && !insideQuote) {
 
                 row.push(cell);
+
                 cell = "";
 
                 continue;
@@ -384,25 +460,43 @@
             /*
              * 改行
              */
-            if ((char === "\n" || char === "\r") && !insideQuote) {
 
-                /*
-                 * Windows形式の \r\n
-                 */
-                if (char === "\r" && next === "\n") {
+            if (
+                (char === "\n" || char === "\r") &&
+                !insideQuote
+            ) {
+
+                if (
+                    char === "\r" &&
+                    next === "\n"
+                ) {
+
                     i++;
+
                 }
 
+
                 row.push(cell);
+
 
                 /*
                  * 空行は無視
                  */
-                if (row.some(value => value.trim() !== "")) {
+
+                if (
+                    row.some(
+                        value =>
+                            value.trim() !== ""
+                    )
+                ) {
+
                     rows.push(row);
+
                 }
 
+
                 row = [];
+
                 cell = "";
 
                 continue;
@@ -412,19 +506,32 @@
             /*
              * 通常の文字
              */
+
             cell += char;
         }
 
 
         /*
-         * 最後のセル
+         * ファイル末尾
          */
-        if (cell.length > 0 || row.length > 0) {
+
+        if (
+            cell.length > 0 ||
+            row.length > 0
+        ) {
 
             row.push(cell);
 
-            if (row.some(value => value.trim() !== "")) {
+
+            if (
+                row.some(
+                    value =>
+                        value.trim() !== ""
+                )
+            ) {
+
                 rows.push(row);
+
             }
         }
 
@@ -436,20 +543,22 @@
     /*
      * =========================================================
      * 見出しを探す
-     *
-     * Googleフォームの質問文は長いので、
-     * 完全一致ではなく「含まれているか」で探す。
      * =========================================================
      */
 
-    function findHeaderIndex(headers, searchText) {
+    function findHeaderIndex(
+        headers,
+        searchText
+    ) {
 
-        return headers.findIndex(header =>
-            header
-                .replace(/^\uFEFF/, "")
-                .trim()
-                .includes(searchText)
+        return headers.findIndex(
+            header =>
+                header
+                    .replace(/^\uFEFF/, "")
+                    .trim()
+                    .includes(searchText)
         );
+
     }
 
 
@@ -462,72 +571,97 @@
     async function loadMovies() {
 
         const storyText =
-            document.getElementById("story-text");
+            document.getElementById(
+                "story-text"
+            );
+
 
         try {
 
             storyText.innerHTML =
-                '<span class="loading">映画データを読み込み中……</span>';
+                `
+                <span class="loading">
+                    映画データを読み込み中……
+                </span>
+                `;
 
 
             /*
              * CSV取得
              */
-            const response = await fetch(csvUrl, {
-                cache: "no-store"
-            });
+
+            const response =
+                await fetch(
+                    csvUrl,
+                    {
+                        cache: "no-store"
+                    }
+                );
 
 
             if (!response.ok) {
+
                 throw new Error(
                     "CSVを取得できませんでした"
                 );
+
             }
 
 
             /*
              * CSV本文
              */
-            const text = await response.text();
+
+            const text =
+                await response.text();
 
 
             /*
              * CSV解析
              */
-            const rows = parseCSV(text);
+
+            const rows =
+                parseCSV(text);
 
 
             /*
-             * データがない
+             * データ確認
              */
+
             if (rows.length < 2) {
 
                 throw new Error(
                     "スプレッドシートに映画データがありません"
                 );
+
             }
 
 
             /*
-             * 1行目＝見出し
+             * 1行目は見出し
              */
-            const headers = rows[0];
+
+            const headers =
+                rows[0];
 
 
             /*
-             * 各列を探す
+             * 列を検索
              */
+
             const titleIndex =
                 findHeaderIndex(
                     headers,
                     TITLE_HEADER
                 );
 
+
             const storyIndex =
                 findHeaderIndex(
                     headers,
                     STORY_HEADER
                 );
+
 
             const linkIndex =
                 findHeaderIndex(
@@ -537,8 +671,9 @@
 
 
             /*
-             * 列が見つからなかった場合
+             * タイトル列確認
              */
+
             if (titleIndex === -1) {
 
                 console.error(
@@ -547,10 +682,15 @@
                 );
 
                 throw new Error(
-                    "「映画のタイトルを教えてね」の列が見つかりませんでした"
+                    "タイトルの列が見つかりませんでした"
                 );
+
             }
 
+
+            /*
+             * あらすじ列確認
+             */
 
             if (storyIndex === -1) {
 
@@ -560,52 +700,73 @@
                 );
 
                 throw new Error(
-                    "「あらすじを80～140字くらいで教えてね」の列が見つかりませんでした"
+                    "あらすじの列が見つかりませんでした"
                 );
+
             }
 
 
             /*
-             * 映画データ作成
+             * 映画データを作成
              */
-            movies = rows
-                .slice(1)
-                .map(row => {
 
-                    return {
+            movies =
+                rows
+                    .slice(1)
+                    .map(row => {
 
-                        title:
-                            (row[titleIndex] || "")
-                                .trim(),
+                        return {
 
-                        story:
-                            (row[storyIndex] || "")
-                                .trim(),
+                            title:
+                                (
+                                    row[titleIndex] ||
+                                    ""
+                                ).trim(),
 
-                        link:
-                            linkIndex !== -1
-                                ? (row[linkIndex] || "").trim()
-                                : ""
-                    };
-                })
-                /*
-                 * あらすじが空の行は除外
-                 */
-                .filter(movie =>
-                    movie.story.length > 0
-                );
+                            story:
+                                (
+                                    row[storyIndex] ||
+                                    ""
+                                ).trim(),
+
+                            link:
+                                linkIndex !== -1
+                                    ? (
+                                        row[linkIndex] ||
+                                        ""
+                                    ).trim()
+                                    : ""
+                        };
+
+                    })
+
+
+                    /*
+                     * あらすじが空の行は除外
+                     */
+
+                    .filter(
+                        movie =>
+                            movie.story.length > 0
+                    );
 
 
             /*
              * 映画がない
              */
+
             if (movies.length === 0) {
 
                 throw new Error(
                     "あらすじが入っている映画データがありません"
                 );
+
             }
 
+
+            /*
+             * デバッグ用
+             */
 
             console.log(
                 "読み込んだ映画数:",
@@ -614,24 +775,32 @@
 
 
             /*
-             * ボタン表示
+             * ガチャボタン表示
              */
+
             document
-                .getElementById("next-btn")
-                .classList.remove("hidden");
+                .getElementById(
+                    "next-btn"
+                )
+                .classList
+                .remove("hidden");
 
 
             /*
              * 最初のガチャ
              */
+
             drawGacha();
 
 
             /*
              * ステータス
              */
+
             document
-                .getElementById("status")
+                .getElementById(
+                    "status"
+                )
                 .textContent =
                     `${movies.length}作品からガチャしています`;
 
@@ -654,10 +823,14 @@
 
 
             document
-                .getElementById("status")
+                .getElementById(
+                    "status"
+                )
                 .textContent =
                     error.message;
+
         }
+
     }
 
 
@@ -670,16 +843,20 @@
     function drawGacha() {
 
         if (movies.length === 0) {
+
             return;
+
         }
 
 
         /*
          * ランダムに映画を選ぶ
          */
+
         const randomIndex =
             Math.floor(
-                Math.random() * movies.length
+                Math.random() *
+                movies.length
             );
 
 
@@ -689,12 +866,16 @@
 
         /*
          * =====================================================
-         * タイトルは表示しない！！
+         * あらすじ表示
+         *
+         * タイトルは表示しない！
          * =====================================================
          */
 
         document
-            .getElementById("story-text")
+            .getElementById(
+                "story-text"
+            )
             .textContent =
                 selectedMovie.story;
 
@@ -706,72 +887,143 @@
          */
 
         const amazonBtn =
-            document.getElementById("amazon-btn");
+            document.getElementById(
+                "amazon-btn"
+            );
 
 
         if (
             selectedMovie.link &&
-            /^https?:\/\//i.test(selectedMovie.link)
+            /^https?:\/\//i.test(
+                selectedMovie.link
+            )
         ) {
 
             amazonBtn.href =
                 selectedMovie.link;
 
-            amazonBtn.classList.remove("hidden");
+            amazonBtn
+                .classList
+                .remove("hidden");
 
         } else {
 
-            amazonBtn.classList.add("hidden");
+            amazonBtn
+                .classList
+                .add("hidden");
+
         }
 
 
         /*
          * =====================================================
          * Xシェア
-         *
-         * タイトルは伏せたまま。
-         * あらすじだけシェアする。
          * =====================================================
          */
 
         const xBtn =
-            document.getElementById("x-btn");
+            document.getElementById(
+                "x-btn"
+            );
 
 
-        const storyForShare =
-            selectedMovie.story.length > 100
-                ? selectedMovie.story.substring(0, 100) + "……"
-                : selectedMovie.story;
+        /*
+         * X用あらすじの最大文字数
+         *
+         * URLや固定文が入るので、
+         * かなり余裕を持たせる。
+         */
 
+        const MAX_STORY_LENGTH = 70;
+
+
+        let storyForShare;
+
+
+        if (
+            selectedMovie.story.length >
+            MAX_STORY_LENGTH
+        ) {
+
+            storyForShare =
+                selectedMovie.story
+                    .substring(
+                        0,
+                        MAX_STORY_LENGTH
+                    ) +
+                "……";
+
+        } else {
+
+            storyForShare =
+                selectedMovie.story;
+
+        }
+
+
+        /*
+         * =====================================================
+         * ツイート本文
+         *
+         * タイトルは伏せる。
+         * =====================================================
+         */
 
         const shareText =
-            `【アマプラ映画あらすじガチャ】\n\nこの映画、な〜んだ？🎬\n\n「${storyForShare}」`;
+            `#アマプラ映画あらすじガチャ\n\n` +
+            `この映画、な〜んだ？🎬\n\n` +
+            `「${storyForShare}」`;
 
+
+        /*
+         * 現在のサイトURL
+         */
 
         const currentUrl =
             window.location.href;
 
 
+        /*
+         * =====================================================
+         * X投稿URL
+         *
+         * URLは本文とは別に付ける。
+         * =====================================================
+         */
+
         xBtn.href =
             "https://twitter.com/intent/tweet" +
             "?text=" +
-            encodeURIComponent(shareText) +
+            encodeURIComponent(
+                shareText
+            ) +
             "&url=" +
-            encodeURIComponent(currentUrl);
+            encodeURIComponent(
+                currentUrl
+            );
 
 
-        xBtn.classList.remove("hidden");
+        /*
+         * Xボタン表示
+         */
+
+        xBtn
+            .classList
+            .remove("hidden");
+
     }
 
 
     /*
      * =========================================================
-     * 次の映画ボタン
+     * 次の映画
      * =========================================================
      */
 
     document
-        .getElementById("next-btn")
+        .getElementById(
+            "next-btn"
+        )
         .addEventListener(
             "click",
             drawGacha
@@ -780,7 +1032,7 @@
 
     /*
      * =========================================================
-     * スタート
+     * スタート！
      * =========================================================
      */
 
