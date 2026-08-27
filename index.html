@@ -129,7 +129,7 @@
     <div class="title">アマプラ映画あらすじガチャ</div>
     
     <div class="illustration-box">
-        <!-- 手書きのねこちゃん画像URL -->
+        <!-- 手書きねこちゃん画像の直リンク -->
         <img src="https://googleapis.com" alt="ねこちゃん">
     </div>
 
@@ -167,6 +167,7 @@
         for (let i = 1; i < lines.length; i++) {
             if (!lines[i].trim()) continue;
             
+            // カンマとクォーテーションを正しく処理する簡易パース
             let row = [];
             let insideQuote = false;
             let entry = '';
@@ -184,12 +185,19 @@
             }
             row.push(entry.trim());
             
-            if (row[1]) { // あらすじが存在する場合のみ追加
-                result.push({
-                    title: row[0] ? row[0].replace(/^"|"$/g, '').replace(/""/g, '"') : '',
-                    story: row[1] ? row[1].replace(/^"|"$/g, '').replace(/""/g, '"') : '',
-                    link: row[2] ? row[2].replace(/^"|"$/g, '').replace(/""/g, '"') : ''
-                });
+            // スプレッドシートの並び順（A:映画タイトル, B:あらすじ, C:Amazonリンク）
+            if (row.length >= 2) {
+                const titleStr = row[0].replace(/^"|"$/g, '').replace(/""/g, '"');
+                const storyStr = row[1].replace(/^"|"$/g, '').replace(/""/g, '"');
+                const linkStr = row[2] ? row[2].replace(/^"|"$/g, '').replace(/""/g, '"') : '';
+                
+                if (storyStr) {
+                    result.push({
+                        title: titleStr,
+                        story: storyStr,
+                        link: linkStr
+                    });
+                }
             }
         }
         return result;
