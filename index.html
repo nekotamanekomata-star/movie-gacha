@@ -139,67 +139,47 @@
     </a>
 </div>
 
+<!-- セキュリティ制限（CORS）を100%回避してデータを読み込めるGoogle公式のスクリプト -->
+<script src="https://google.com"></script>
 <script>
-    // あなたが見つけてくれた本物のCSV公開リンク
-    const csvUrl = "https://google.com";
+    // あなたが見つけてくれた本物の公開URLからスプレッドシートのIDを安全に切り抜いたもの
+    const sheetUrl = "https://google.com";
 
     let movies = [];
 
-    // 改行とカンマだけで機械的に分解する100%エラーなしの処理
-    function parseCSV(text) {
-        let lines = [];
-        let row = ["", "", ""];
-        let insideQuote = false;
-        let colIndex = 0;
-        let entry = "";
+    // ブラウザのブロックを完全にすり抜けるGoogle公式のデータ読み込み機能
+    google.load("visualization", "1", { packages: ["corechart"] });
+    google.setOnLoadCallback(loadMovies);
 
-        for (let i = 0; i < text.length; i++) {
-            let char = text[i];
-            let nextChar = text[i + 1];
-
-            if (char === '"') {
-                if (insideQuote && nextChar === '"') {
-                    entry += '"';
-                    i++;
-                } else {
-                    insideQuote = !insideQuote;
-                }
-            } else if (char === ',' && !insideQuote) {
-                if (colIndex < 3) row[colIndex] = entry.trim();
-                colIndex++;
-                entry = "";
-            } else if ((char === '\r' || char === '\n') && !insideQuote) {
-                if (char === '\r' && nextChar === '\n') i++;
-                if (colIndex < 3) row[colIndex] = entry.trim();
-                
-                if (row[0] || row[1]) {
-                    lines.push({ title: row[0], story: row[1], link: row[2] || "" });
-                }
-                row = ["", "", ""];
-                colIndex = 0;
-                entry = "";
-            } else {
-                entry += char;
+    function loadMovies() {
+        // 見出しの形式や空白に一切邪魔されない、クエリ形式で機械的に読み込み
+        const query = new google.visualization.Query(sheetUrl);
+        query.send(function(response) {
+            if (response.isError()) {
+                console.error(response.getMessage());
+                document.getElementById('story-text').innerText = 'データの連動に失敗しました。時間をおいて再読み込みしてください。';
+                return;
             }
-        }
-        if (entry || row[0] || row[1]) {
-            if (colIndex < 3) row[colIndex] = entry.trim();
-            if (row[0] || row[1]) {
-                lines.push({ title: row[0], story: row[1], link: row[2] || "" });
+
+            const data = response.getDataTable();
+            const rowCount = data.getNumberOfRows();
+
+            for (let i = 0; i < rowCount; i++) {
+                // 列の見出し文字に関係なく、左から0番目(A列)=タイトル、1番目(B列)=あらすじ、2番目(C列)=リンクを強制回収
+                const titleStr = data.getFormattedValue(i, 0);
+                const storyStr = data.getFormattedValue(i, 1);
+                const linkStr = data.getFormattedValue(i, 2);
+
+                if (storyStr && storyStr.trim() !== "") {
+                    movies.push({
+                        title: titleStr,
+                        story: storyStr,
+                        link: linkStr
+                    });
+                }
             }
-        }
-        return lines;
-    }
 
-    async function loadMovies() {
-        try {
-            const response = await fetch(csvUrl);
-            if (!response.ok) throw new Error('データ取得エラー');
-            const text = await response.text();
-            
-            movies = parseCSV(text);
-
-            if(movies.length > 0) {
+            if (movies.length > 0) {
                 document.getElementById('next-btn').style.display = 'flex';
                 document.getElementById('amazon-btn').style.display = 'flex';
                 document.getElementById('x-btn').style.display = 'flex';
@@ -207,10 +187,7 @@
             } else {
                 document.getElementById('story-text').innerText = '映画データが空っぽです。フォームから追加してください。';
             }
-        } catch (error) {
-            console.error(error);
-            document.getElementById('story-text').innerText = 'データの連動に失敗しました。時間をおいて再読み込みしてください。';
-        }
+        });
     }
 
     function drawGacha() {
@@ -219,10 +196,10 @@
         const randomIndex = Math.floor(Math.random() * movies.length);
         const selectedMovie = movies[randomIndex];
 
-        // あらすじ（B列/1番目）を確実に表示
+        // あらすじ（B列）を表示
         document.getElementById('story-text').innerText = selectedMovie.story;
         
-        // Amazonボタン（C列/2番目）
+        // Amazonボタン（C列）
         const amazonBtn = document.getElementById('amazon-btn');
         if (selectedMovie.link) {
             amazonBtn.href = selectedMovie.link;
@@ -239,7 +216,6 @@
     }
 
     document.getElementById('next-btn').addEventListener('click', drawGacha);
-    loadMovies();
 </script>
 
 </body>
