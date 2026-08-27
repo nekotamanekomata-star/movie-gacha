@@ -11,6 +11,7 @@
             --text-color: #4a3e3d;
             --btn-main: #b88e76;
             --btn-main-hover: #a37a63;
+            --btn-gacha: #d2b48c;
             --btn-x: #473f3e;
             --btn-x-hover: #2d2726;
         }
@@ -94,7 +95,7 @@
             background-color: var(--btn-main-hover);
         }
         .btn-gacha {
-            background-color: #d2b48c;
+            background-color: var(--btn-gacha);
             color: #4a3e3d;
         }
         .btn-x {
@@ -128,7 +129,7 @@
     <div class="title">アマプラ映画あらすじガチャ</div>
     
     <div class="illustration-box">
-        <!-- 直接アップロードしてくれたねこちゃん画像URL -->
+        <!-- 手書きのねこちゃん画像URL -->
         <img src="https://googleapis.com" alt="ねこちゃん">
     </div>
 
@@ -154,13 +155,11 @@
 </div>
 
 <script>
-    // CSV形式でスプレッドシートから直接安全に引っこ抜く設定
-    const sheetId = '1NjDui97vdLI6rJXmPGUi8Pz1oU1tBuFKsMocapp6upk';
-    const csvUrl = `https://google.com{sheetId}/pub?output=csv`;
+    // あなたが見つけてくれた、本物のウェブ公開CSVリンク！
+    const csvUrl = "https://google.com";
 
     let movies = [];
 
-    // CSVをパースする関数
     function parseCSV(text) {
         const lines = text.split('\n');
         const result = [];
@@ -168,7 +167,6 @@
         for (let i = 1; i < lines.length; i++) {
             if (!lines[i].trim()) continue;
             
-            // カンマ区切りの単純パース（クォーテーション対応）
             let row = [];
             let insideQuote = false;
             let entry = '';
@@ -186,11 +184,11 @@
             }
             row.push(entry.trim());
             
-            if (row[1]) { // あらすじがある場合
+            if (row[1]) { // あらすじが存在する場合のみ追加
                 result.push({
-                    title: row[0] ? row[0].replace(/^"|"$/g, '') : '',
+                    title: row[0] ? row[0].replace(/^"|"$/g, '').replace(/""/g, '"') : '',
                     story: row[1] ? row[1].replace(/^"|"$/g, '').replace(/""/g, '"') : '',
-                    link: row[2] ? row[2].replace(/^"|"$/g, '') : ''
+                    link: row[2] ? row[2].replace(/^"|"$/g, '').replace(/""/g, '"') : ''
                 });
             }
         }
@@ -200,7 +198,7 @@
     async function loadMovies() {
         try {
             const response = await fetch(csvUrl);
-            if (!response.ok) throw new Error('Network error');
+            if (!response.ok) throw new Error('データ取得エラー');
             const text = await response.text();
             
             movies = parseCSV(text);
@@ -211,11 +209,11 @@
                 document.getElementById('x-btn').style.display = 'flex';
                 drawGacha();
             } else {
-                document.getElementById('story-text').innerText = '映画データが見つかりませんでした。';
+                document.getElementById('story-text').innerText = '映画データが空っぽです。フォームから追加してください。';
             }
         } catch (error) {
             console.error(error);
-            document.getElementById('story-text').innerText = 'データの読み込みに失敗しました。ウェブに公開されているか確認してください。';
+            document.getElementById('story-text').innerText = 'データの連動に失敗しました。時間をおいて再読み込みしてください。';
         }
     }
 
@@ -225,8 +223,10 @@
         const randomIndex = Math.floor(Math.random() * movies.length);
         const selectedMovie = movies[randomIndex];
 
+        // あらすじを表示
         document.getElementById('story-text').innerText = selectedMovie.story;
         
+        // Amazonボタン
         const amazonBtn = document.getElementById('amazon-btn');
         if (selectedMovie.link) {
             amazonBtn.href = selectedMovie.link;
@@ -235,9 +235,10 @@
             amazonBtn.style.display = 'none';
         }
 
+        // Xシェア
         const currentUrl = window.location.href;
         const xBtn = document.getElementById('x-btn');
-        const shareText = encodeURIComponent(`【アマプラ映画あらすじガチャ】この映画、な〜んだ？\n\n「${selectedMovie.story.substring(0, 55)}...」`);
+        const shareText = encodeURIComponent(`【アマプラ映画あらすじガチャ】この映画、な〜んだ？\n\n「${selectedMovie.story.substring(0, 50)}...」`);
         xBtn.href = `https://x.com{shareText}&url=${encodeURIComponent(currentUrl)}`;
     }
 
