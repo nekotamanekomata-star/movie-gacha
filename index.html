@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>アマプラ映画あらすじガチャ</title>
+    <style>
+        :root {
+            --bg-color: #f4eae1;
+            --card-bg: #ffffff;
+            --text-color: #4a3e3d;
+            --btn-main: #b88e76;
+            --btn-main-hover: #a37a63;
+            --btn-x: #473f3e;
+            --btn-x-hover: #2d2726;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px 24px;
+            box-shadow: 0 8px 24px rgba(74, 62, 61, 0.08);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 24px;
+            letter-spacing: 0.05em;
+        }
+        .illustration-box {
+            width: 160px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .illustration-box img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+        .story-card {
+            width: 100%;
+            min-height: 160px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            padding: 10px 5px;
+            word-break: break-all;
+            font-weight: 500;
+        }
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-bottom: 12px;
+        }
+        .btn-main {
+            background-color: var(--btn-main);
+            color: white;
+        }
+        .btn-main:hover {
+            background-color: var(--btn-main-hover);
+        }
+        .btn-x {
+            background-color: var(--btn-x);
+            color: white;
+            font-size: 0.95rem;
+        }
+        .btn-x:hover {
+            background-color: var(--btn-x-hover);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: #8c7e7d;
+            border: 2px dashed #dcd0c5;
+            margin-top: 10px;
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+        .btn-secondary:hover {
+            background-color: #fff9f5;
+            border-color: var(--btn-main);
+            color: var(--btn-main);
+        }
+        .loading {
+            color: #8c7e7d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="title">アマプラ映画あらすじガチャ</div>
+    
+    <div class="illustration-box">
+        <!-- ベース64化したねこちゃんイラスト -->
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAADIAQMAAAAwS6mFAAAABlBMVEUAAAD///+l2Z/dAAABM0lEQVRo3u2XwQ3CMAxFb8QInYAs0AnYgAnYgAnIQidgBEbgx+b3qG0VpVJ9gOsnOf6fFwsh/I8kREpZ7ZGlV5b1KzD0Zsc7r/Yg7V7ancp6NAnvRlo9gEor7yZlnWlWw3R/LNoYV98p6+6tD8K6gXb3vFqFvHuyvXuyfSTZ3tBw9/gA6lIbyYVz8S9Q+UvQ8CNoeA0atvI27uXNuJe7cR9fC8XfQunfQulvI95bKHzDhdv4fivf46K5aG7w/Kpxb6D8CqS9A3nvQOMv72yXyvbaZHtD7vFq0709V/6mS3t9r+wOytY3ZasP+u6wZas3NHzb5B5P9X0b7vFm7vE8vSfrzbyN8vSdr7f0ZsX7fE1vlnu8We7xlN6st6X3ZN5fE0IIPfEFS3mS5iOymkMAAAAASUVORK5CYII=" alt="ねこちゃん">
+    </div>
+
+    <div class="story-card" id="story-text">
+        <span class="loading">映画データを読み込み中...</span>
+    </div>
+
+    <a href="#" target="_blank" id="amazon-btn" class="btn btn-main" style="display: none;">
+        <span>▷ この映画をみる</span>
+    </a>
+
+    <button id="next-btn" class="btn btn-main" style="display: none; background-color: #d2b48c; color: #4a3e3d;">
+        <span>🎲 次の映画を引く！</span>
+    </button>
+
+    <a href="#" target="_blank" id="x-btn" class="btn btn-x" style="display: none;">
+        <span>𝕏 ガチャの結果をシェアする</span>
+    </a>
+
+    <a href="https://google.com" target="_blank" class="btn btn-secondary">
+        <span>✎ 好きな映画のあらすじを投稿する</span>
+    </a>
+</div>
+
+<script>
+    // スプレッドシートのJSON変換URL
+    const sheetId = '1NjDui97vdLI6rJXmPGUi8Pz1oU1tBuFKsMocapp6upk';
+    const url = `https://google.com{sheetId}/gviz/tq?tqx=out:json`;
+
+    let movies = [];
+
+    async function loadMovies() {
+        try {
+            const response = await fetch(url);
+            const text = await response.text();
+            // Google特有のjsonラッパーを剥ぎ取る
+            const jsonText = text.substring(text.indexOf("google.visualization.Query.setResponse(") + 38, text.length - 2);
+            const data = JSON.parse(jsonText);
+            
+            const rows = data.table.rows;
+            // 1行目は見出しなので無視、2行目から読み込み
+            movies = rows.map(row => {
+                return {
+                    title: row.c[0] ? row.c[0].v : '',
+                    story: row.c[1] ? row.c[1].v : '',
+                    link: row.c[2] ? row.c[2].v : ''
+                };
+            }).filter(movie => movie.story); // あらすじが空じゃないものだけ
+
+            if(movies.length > 0) {
+                document.getElementById('next-btn').style.display = 'flex';
+                document.getElementById('amazon-btn').style.display = 'flex';
+                document.getElementById('x-btn').style.display = 'flex';
+                drawGacha();
+            } else {
+                document.getElementById('story-text').innerText = '映画データが見つかりませんでした。';
+            }
+        } catch (error) {
+            console.error(error);
+            document.getElementById('story-text').innerText = 'データの読み込みに失敗しました。';
+        }
+    }
+
+    function drawGacha() {
+        if (movies.length === 0) return;
+        
+        // ランダムに1つ選ぶ
+        const randomIndex = Math.floor(Math.random() * movies.length);
+        const selectedMovie = movies[randomIndex];
+
+        // 画面に反映（タイトルは伏せてあらすじだけ）
+        document.getElementById('story-text').innerText = selectedMovie.story;
+        
+        // Amazonリンクの設定
+        const amazonBtn = document.getElementById('amazon-btn');
+        if (selectedMovie.link) {
+            amazonBtn.href = selectedMovie.link;
+            amazonBtn.style.display = 'flex';
+        } else {
+            amazonBtn.style.display = 'none';
+        }
+
+        // Xシェアリンクの設定（現在のURLを自動取得してスマートにシェア）
+        const currentUrl = window.location.href;
+        const xBtn = document.getElementById('x-btn');
+        const shareText = encodeURIComponent(`【アマプラ映画あらすじガチャ】この映画、な〜んだ？\n\n「${selectedMovie.story.substring(0, 50)}...」`);
+        xBtn.href = `https://x.com{shareText}&url=${encodeURIComponent(currentUrl)}`;
+    }
+
+    document.getElementById('next-btn').addEventListener('click', drawGacha);
+
+    // 初回読み込み
+    loadMovies();
+</script>
+
+</body>
+</html>
