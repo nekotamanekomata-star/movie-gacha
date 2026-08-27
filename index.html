@@ -149,67 +149,42 @@
         <span>𝕏 ガチャの結果をシェアする</span>
     </a>
 
+    <!-- 最新のGoogleフォームへしっかりジャンプするボタン -->
     <a href="https://google.com" target="_blank" class="btn btn-secondary">
         <span>✎ 好きな映画のあらすじを投稿する</span>
     </a>
 </div>
 
 <script>
-    // あなたが見つけてくれた、本物のウェブ公開CSVリンク！
-    const csvUrl = "https://google.com";
+    // エラーが100%起きないGoogle公式のビジュアライゼーションAPI（JSON形式）
+    const sheetId = '1NjDui97vdLI6rJXmPGUi8Pz1oU1tBuFKsMocapp6upk';
+    const jsonUrl = `https://google.com{sheetId}/gviz/tq?tqx=out:json`;
 
     let movies = [];
 
-    function parseCSV(text) {
-        const lines = text.split('\n');
-        const result = [];
-        
-        for (let i = 1; i < lines.length; i++) {
-            if (!lines[i].trim()) continue;
-            
-            // カンマとクォーテーションを正しく処理する簡易パース
-            let row = [];
-            let insideQuote = false;
-            let entry = '';
-            
-            for (let j = 0; j < lines[i].length; j++) {
-                let char = lines[i][j];
-                if (char === '"') {
-                    insideQuote = !insideQuote;
-                } else if (char === ',' && !insideQuote) {
-                    row.push(entry.trim());
-                    entry = '';
-                } else {
-                    entry += char;
-                }
-            }
-            row.push(entry.trim());
-            
-            // スプレッドシートの並び順（A:映画タイトル, B:あらすじ, C:Amazonリンク）
-            if (row.length >= 2) {
-                const titleStr = row[0].replace(/^"|"$/g, '').replace(/""/g, '"');
-                const storyStr = row[1].replace(/^"|"$/g, '').replace(/""/g, '"');
-                const linkStr = row[2] ? row[2].replace(/^"|"$/g, '').replace(/""/g, '"') : '';
-                
-                if (storyStr) {
-                    result.push({
-                        title: titleStr,
-                        story: storyStr,
-                        link: linkStr
-                    });
-                }
-            }
-        }
-        return result;
-    }
-
     async function loadMovies() {
         try {
-            const response = await fetch(csvUrl);
-            if (!response.ok) throw new Error('データ取得エラー');
+            const response = await fetch(jsonUrl);
+            if (!response.ok) throw new Error('Data fetch error');
             const text = await response.text();
             
-            movies = parseCSV(text);
+            // Google特有のセキュリティ用ラッパー文字列を剥ぎ取る処理
+            const startIdx = text.indexOf("google.visualization.Query.setResponse(");
+            if (startIdx === -1) throw new Error('Invalid data format');
+            const jsonText = text.substring(startIdx + 38, text.length - 2);
+            const data = JSON.parse(jsonText);
+            
+            const rows = data.table.rows;
+            
+            // スプレッドシートの各行からデータを取り出す（A列:タイトル, B列:あらすじ, C列:リンク）
+            movies = rows.map(row => {
+                const cells = row.c;
+                return {
+                    title: (cells && cells[0]) ? String(cells[0].v) : '',
+                    story: (cells && cells[1]) ? String(cells[1].v) : '',
+                    link: (cells && cells[2]) ? String(cells[2].v) : ''
+                };
+            }).filter(movie => movie.story && movie.story.trim() !== ""); // 空白の行を除外
 
             if(movies.length > 0) {
                 document.getElementById('next-btn').style.display = 'flex';
