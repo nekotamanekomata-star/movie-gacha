@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>アマプラ映画あらすじガチャ</title>
+
     <style>
         :root {
             --bg-color: #f4eae1;
@@ -12,255 +14,778 @@
             --btn-main: #b88e76;
             --btn-main-hover: #a37a63;
             --btn-gacha: #d2b48c;
+            --btn-gacha-hover: #c19e70;
             --btn-x: #473f3e;
             --btn-x-hover: #2d2726;
         }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
         }
+
         body {
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            font-family:
+                "Helvetica Neue",
+                Arial,
+                "Hiragino Kaku Gothic ProN",
+                "Hiragino Sans",
+                Meiryo,
+                sans-serif;
+
             background-color: var(--bg-color);
             color: var(--text-color);
+
             display: flex;
             justify-content: center;
             align-items: center;
+
             min-height: 100vh;
             padding: 20px;
         }
+
         .container {
             width: 100%;
             max-width: 420px;
+
             background: var(--card-bg);
             border-radius: 24px;
+
             padding: 30px 24px;
-            box-shadow: 0 8px 24px rgba(74, 62, 61, 0.08);
+
+            box-shadow:
+                0 8px 24px rgba(74, 62, 61, 0.08);
+
             text-align: center;
+
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+
         .title {
             font-size: 1.4rem;
             font-weight: bold;
+
             margin-bottom: 24px;
+
             letter-spacing: 0.05em;
         }
+
+        /* ねこちゃん */
         .illustration-box {
             width: 180px;
-            height: auto;
+            height: 180px;
+
             margin-bottom: 20px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
         .illustration-box img {
             width: 100%;
-            height: auto;
+            height: 100%;
+
             object-fit: contain;
+
+            display: block;
         }
+
+        /* あらすじ */
         .story-card {
             width: 100%;
             min-height: 140px;
+
             display: flex;
             justify-content: center;
             align-items: center;
+
             font-size: 1.05rem;
             line-height: 1.7;
+
             margin-bottom: 24px;
             padding: 10px 5px;
+
             font-weight: 500;
         }
+
+        .story-text {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .loading {
+            color: #8c7e7d;
+            font-style: italic;
+        }
+
+        .error {
+            color: #a65d50;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* ボタン共通 */
         .btn {
             width: 100%;
+
             padding: 15px;
+
             border-radius: 14px;
+
             font-size: 1rem;
             font-weight: bold;
+
             border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+
+            transition:
+                background-color 0.2s ease,
+                transform 0.1s ease;
+
             display: flex;
             justify-content: center;
             align-items: center;
+
             gap: 8px;
+
             text-decoration: none;
+
             margin-bottom: 12px;
         }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Amazon */
         .btn-main {
             background-color: var(--btn-main);
             color: white;
         }
+
         .btn-main:hover {
             background-color: var(--btn-main-hover);
         }
+
+        /* ガチャ */
         .btn-gacha {
             background-color: var(--btn-gacha);
             color: #4a3e3d;
         }
+
+        .btn-gacha:hover {
+            background-color: var(--btn-gacha-hover);
+        }
+
+        /* X */
         .btn-x {
             background-color: var(--btn-x);
             color: white;
             font-size: 0.95rem;
         }
+
         .btn-x:hover {
             background-color: var(--btn-x-hover);
         }
+
+        /* 投稿 */
         .btn-secondary {
             background-color: transparent;
             color: #8c7e7d;
+
             border: 2px dashed #dcd0c5;
+
             margin-top: 10px;
             margin-bottom: 0;
+
             font-size: 0.9rem;
         }
+
         .btn-secondary:hover {
             background-color: #fff9f5;
         }
-        .loading {
-            color: #8c7e7d;
-            font-style: italic;
+
+        .hidden {
+            display: none !important;
+        }
+
+        .status {
+            font-size: 0.75rem;
+            color: #aaa09d;
+            margin-top: 8px;
         }
     </style>
 </head>
+
 <body>
 
 <div class="container">
-    <div class="title">アマプラ映画あらすじガチャ</div>
-    
+
+    <div class="title">
+        アマプラ映画あらすじガチャ
+    </div>
+
+    <!-- ねこちゃん -->
     <div class="illustration-box">
-        <!-- 手書きねこちゃん画像の直リンク -->
-        <img src="https://googleapis.com" alt="ねこちゃん">
+        <img
+            src="./HQteOS-bIAAoMx5.jpe"
+            alt="ねこちゃん"
+        >
     </div>
 
+    <!-- あらすじ -->
     <div class="story-card" id="story-text">
-        <span class="loading">映画データを読み込み中...</span>
+        <span class="loading">
+            映画データを読み込み中……
+        </span>
     </div>
 
-    <a href="#" target="_blank" id="amazon-btn" class="btn btn-main" style="display: none;">
+    <!-- Amazon -->
+    <a
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        id="amazon-btn"
+        class="btn btn-main hidden"
+    >
         <span>▷ この映画をみる</span>
     </a>
 
-    <button id="next-btn" class="btn btn-main btn-gacha" style="display: none;">
+    <!-- 次の映画 -->
+    <button
+        id="next-btn"
+        class="btn btn-gacha hidden"
+        type="button"
+    >
         <span>🎲 次の映画を引く！</span>
     </button>
 
-    <a href="#" target="_blank" id="x-btn" class="btn btn-x" style="display: none;">
+    <!-- X -->
+    <a
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        id="x-btn"
+        class="btn btn-x hidden"
+    >
         <span>𝕏 ガチャの結果をシェアする</span>
     </a>
 
-    <!-- 【今度こそ完全に修正完了！】アスパラベーコンさんが教えてくれた最新の本物フォームのリンク！ -->
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLScRD2arhC8d55o3ng6GmWRBbUMBCT0n1Vlcb0qUKG9cUIaNmg/viewform" target="_blank" class="btn btn-secondary">
+    <!-- 映画投稿フォーム -->
+    <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLScRD2arhC8d55o3ng6GmWRBbUMBCT0n1Vlcb0qUKG9cUIaNmg/viewform"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-secondary"
+    >
         <span>✎ 好きな映画のあらすじを投稿する</span>
     </a>
+
+    <div id="status" class="status"></div>
+
 </div>
 
+
 <script>
-    // 最新の本物のウェブ公開CSVリンク（2PACX-1v...を直接合体！）
-    const csvUrl = "https://google.com";
+    /*
+     * =========================================================
+     * Googleスプレッドシートの公開CSV
+     * =========================================================
+     */
+
+    const csvUrl =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vTtvGWtqMgg0X28hsIxK_L7y8dtku8zC2lhK9IqU5keIPywzkuSslq-OlZTBhuXj717K5gIN7-9q6Zd/pub?output=csv";
+
+
+    /*
+     * =========================================================
+     * Googleフォームの質問文
+     *
+     * スプレッドシートの1行目にある見出しを探して、
+     * その列をタイトル・あらすじ・Amazonリンクとして使う。
+     * =========================================================
+     */
+
+    const TITLE_HEADER = "映画のタイトルを教えてね";
+
+    const STORY_HEADER = "あらすじを80～140字くらいで教えてね";
+
+    const LINK_HEADER =
+        "Amazonプライムの映画リンクを貼ってくれるとめちゃくちゃ助かります";
+
 
     let movies = [];
 
-    // スプレッドシートの見出し文字を完全無視して、横の順番だけで確実に分解する処理
+    let selectedMovie = null;
+
+
+    /*
+     * =========================================================
+     * CSV解析
+     *
+     * あらすじの中に
+     * 「,」や改行があっても壊れにくいように解析する。
+     * =========================================================
+     */
+
     function parseCSV(text) {
-        let lines = [];
-        let row = ["", "", ""];
+
+        const rows = [];
+
+        let row = [];
+        let cell = "";
+
         let insideQuote = false;
-        let colIndex = 0;
-        let entry = "";
 
         for (let i = 0; i < text.length; i++) {
-            let char = text[i];
-            let nextChar = text[i + 1];
 
+            const char = text[i];
+            const next = text[i + 1];
+
+            /*
+             * ダブルクォーテーション
+             */
             if (char === '"') {
-                if (insideQuote && nextChar === '"') {
-                    entry += '"';
+
+                /*
+                 * "" はエスケープされた "
+                 */
+                if (insideQuote && next === '"') {
+
+                    cell += '"';
                     i++;
+
                 } else {
+
                     insideQuote = !insideQuote;
                 }
-            } else if (char === ',' && !insideQuote) {
-                if (colIndex < 3) row[colIndex] = entry.trim();
-                colIndex++;
-                entry = "";
-            } else if ((char === '\r' || char === '\n') && !insideQuote) {
-                if (char === '\r' && nextChar === '\n') i++;
-                if (colIndex < 3) row[colIndex] = entry.trim();
-                
-                if (row || row) {
-                    lines.push({ title: row, story: row, link: row || "" });
+
+                continue;
+            }
+
+
+            /*
+             * カンマ
+             */
+            if (char === "," && !insideQuote) {
+
+                row.push(cell);
+                cell = "";
+
+                continue;
+            }
+
+
+            /*
+             * 改行
+             */
+            if ((char === "\n" || char === "\r") && !insideQuote) {
+
+                /*
+                 * Windows形式の \r\n
+                 */
+                if (char === "\r" && next === "\n") {
+                    i++;
                 }
-                row = ["", "", ""];
-                colIndex = 0;
-                entry = "";
-            } else {
-                entry += char;
+
+                row.push(cell);
+
+                /*
+                 * 空行は無視
+                 */
+                if (row.some(value => value.trim() !== "")) {
+                    rows.push(row);
+                }
+
+                row = [];
+                cell = "";
+
+                continue;
+            }
+
+
+            /*
+             * 通常の文字
+             */
+            cell += char;
+        }
+
+
+        /*
+         * 最後のセル
+         */
+        if (cell.length > 0 || row.length > 0) {
+
+            row.push(cell);
+
+            if (row.some(value => value.trim() !== "")) {
+                rows.push(row);
             }
         }
-        if (entry || row || row) {
-            if (colIndex < 3) row[colIndex] = entry.trim();
-            if (row || row) {
-                lines.push({ title: row, story: row, link: row || "" });
-            }
-        }
-        return lines;
+
+
+        return rows;
     }
+
+
+    /*
+     * =========================================================
+     * 見出しを探す
+     *
+     * Googleフォームの質問文は長いので、
+     * 完全一致ではなく「含まれているか」で探す。
+     * =========================================================
+     */
+
+    function findHeaderIndex(headers, searchText) {
+
+        return headers.findIndex(header =>
+            header
+                .replace(/^\uFEFF/, "")
+                .trim()
+                .includes(searchText)
+        );
+    }
+
+
+    /*
+     * =========================================================
+     * 映画データ読み込み
+     * =========================================================
+     */
 
     async function loadMovies() {
-        try {
-            // 新しい公開用リンク（2PACX...）からデータを直接ダウンロード
-            const response = await fetch(csvUrl);
-            if (!response.ok) throw new Error('データ取得エラー');
-            const text = await response.text();
-            
-            movies = parseCSV(text);
 
-            // 1行目は見出しなので、データが2件以上あるかチェック
-            if(movies.length > 1) {
-                // 見出し行（映画のタイトルを教えてね、等）をガチャの箱から除外する
-                movies.shift();
-                
-                document.getElementById('next-btn').style.display = 'flex';
-                document.getElementById('amazon-btn').style.display = 'flex';
-                document.getElementById('x-btn').style.display = 'flex';
-                drawGacha();
-            } else {
-                document.getElementById('story-text').innerText = '映画データが空っぽです。フォームから追加してください。';
+        const storyText =
+            document.getElementById("story-text");
+
+        try {
+
+            storyText.innerHTML =
+                '<span class="loading">映画データを読み込み中……</span>';
+
+
+            /*
+             * CSV取得
+             */
+            const response = await fetch(csvUrl, {
+                cache: "no-store"
+            });
+
+
+            if (!response.ok) {
+                throw new Error(
+                    "CSVを取得できませんでした"
+                );
             }
+
+
+            /*
+             * CSV本文
+             */
+            const text = await response.text();
+
+
+            /*
+             * CSV解析
+             */
+            const rows = parseCSV(text);
+
+
+            /*
+             * データがない
+             */
+            if (rows.length < 2) {
+
+                throw new Error(
+                    "スプレッドシートに映画データがありません"
+                );
+            }
+
+
+            /*
+             * 1行目＝見出し
+             */
+            const headers = rows[0];
+
+
+            /*
+             * 各列を探す
+             */
+            const titleIndex =
+                findHeaderIndex(
+                    headers,
+                    TITLE_HEADER
+                );
+
+            const storyIndex =
+                findHeaderIndex(
+                    headers,
+                    STORY_HEADER
+                );
+
+            const linkIndex =
+                findHeaderIndex(
+                    headers,
+                    LINK_HEADER
+                );
+
+
+            /*
+             * 列が見つからなかった場合
+             */
+            if (titleIndex === -1) {
+
+                console.error(
+                    "タイトル列が見つかりません",
+                    headers
+                );
+
+                throw new Error(
+                    "「映画のタイトルを教えてね」の列が見つかりませんでした"
+                );
+            }
+
+
+            if (storyIndex === -1) {
+
+                console.error(
+                    "あらすじ列が見つかりません",
+                    headers
+                );
+
+                throw new Error(
+                    "「あらすじを80～140字くらいで教えてね」の列が見つかりませんでした"
+                );
+            }
+
+
+            /*
+             * 映画データ作成
+             */
+            movies = rows
+                .slice(1)
+                .map(row => {
+
+                    return {
+
+                        title:
+                            (row[titleIndex] || "")
+                                .trim(),
+
+                        story:
+                            (row[storyIndex] || "")
+                                .trim(),
+
+                        link:
+                            linkIndex !== -1
+                                ? (row[linkIndex] || "").trim()
+                                : ""
+                    };
+                })
+                /*
+                 * あらすじが空の行は除外
+                 */
+                .filter(movie =>
+                    movie.story.length > 0
+                );
+
+
+            /*
+             * 映画がない
+             */
+            if (movies.length === 0) {
+
+                throw new Error(
+                    "あらすじが入っている映画データがありません"
+                );
+            }
+
+
+            console.log(
+                "読み込んだ映画数:",
+                movies.length
+            );
+
+
+            /*
+             * ボタン表示
+             */
+            document
+                .getElementById("next-btn")
+                .classList.remove("hidden");
+
+
+            /*
+             * 最初のガチャ
+             */
+            drawGacha();
+
+
+            /*
+             * ステータス
+             */
+            document
+                .getElementById("status")
+                .textContent =
+                    `${movies.length}作品からガチャしています`;
+
+
         } catch (error) {
-            console.error(error);
-            document.getElementById('story-text').innerText = 'データの連動に失敗しました。時間をおいて再読み込みしてください。';
+
+            console.error(
+                "映画データ読み込みエラー:",
+                error
+            );
+
+
+            storyText.innerHTML =
+                `
+                <span class="error">
+                    映画データの読み込みに失敗しました。<br>
+                    ページを再読み込みしてみてください。
+                </span>
+                `;
+
+
+            document
+                .getElementById("status")
+                .textContent =
+                    error.message;
         }
     }
+
+
+    /*
+     * =========================================================
+     * ガチャ
+     * =========================================================
+     */
 
     function drawGacha() {
-        if (movies.length === 0) return;
-        
-        const randomIndex = Math.floor(Math.random() * movies.length);
-        const selectedMovie = movies[randomIndex];
 
-        // あらすじ（B列）を表示
-        document.getElementById('story-text').innerText = selectedMovie.story;
-        
-        // Amazonボタン（C列）
-        const amazonBtn = document.getElementById('amazon-btn');
-        if (selectedMovie.link) {
-            amazonBtn.href = selectedMovie.link;
-            amazonBtn.style.display = 'flex';
-        } else {
-            amazonBtn.style.display = 'none';
+        if (movies.length === 0) {
+            return;
         }
 
-        // Xシェア
-        const currentUrl = window.location.href;
-        const xBtn = document.getElementById('x-btn');
-        const shareText = encodeURIComponent(`【アマプラ映画あらすじガチャ】この映画、な〜んだ？\n\n「${selectedMovie.story.substring(0, 50)}...」`);
-        xBtn.href = `https://x.com{shareText}&url=${encodeURIComponent(currentUrl)}`;
+
+        /*
+         * ランダムに映画を選ぶ
+         */
+        const randomIndex =
+            Math.floor(
+                Math.random() * movies.length
+            );
+
+
+        selectedMovie =
+            movies[randomIndex];
+
+
+        /*
+         * =====================================================
+         * タイトルは表示しない！！
+         * =====================================================
+         */
+
+        document
+            .getElementById("story-text")
+            .textContent =
+                selectedMovie.story;
+
+
+        /*
+         * =====================================================
+         * Amazonボタン
+         * =====================================================
+         */
+
+        const amazonBtn =
+            document.getElementById("amazon-btn");
+
+
+        if (
+            selectedMovie.link &&
+            /^https?:\/\//i.test(selectedMovie.link)
+        ) {
+
+            amazonBtn.href =
+                selectedMovie.link;
+
+            amazonBtn.classList.remove("hidden");
+
+        } else {
+
+            amazonBtn.classList.add("hidden");
+        }
+
+
+        /*
+         * =====================================================
+         * Xシェア
+         *
+         * タイトルは伏せたまま。
+         * あらすじだけシェアする。
+         * =====================================================
+         */
+
+        const xBtn =
+            document.getElementById("x-btn");
+
+
+        const storyForShare =
+            selectedMovie.story.length > 100
+                ? selectedMovie.story.substring(0, 100) + "……"
+                : selectedMovie.story;
+
+
+        const shareText =
+            `【アマプラ映画あらすじガチャ】\n\nこの映画、な〜んだ？🎬\n\n「${storyForShare}」`;
+
+
+        const currentUrl =
+            window.location.href;
+
+
+        xBtn.href =
+            "https://twitter.com/intent/tweet" +
+            "?text=" +
+            encodeURIComponent(shareText) +
+            "&url=" +
+            encodeURIComponent(currentUrl);
+
+
+        xBtn.classList.remove("hidden");
     }
 
-    document.getElementById('next-btn').addEventListener('click', drawGacha);
+
+    /*
+     * =========================================================
+     * 次の映画ボタン
+     * =========================================================
+     */
+
+    document
+        .getElementById("next-btn")
+        .addEventListener(
+            "click",
+            drawGacha
+        );
+
+
+    /*
+     * =========================================================
+     * スタート
+     * =========================================================
+     */
+
     loadMovies();
+
 </script>
 
 </body>
