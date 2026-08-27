@@ -36,7 +36,7 @@
             max-width: 420px;
             background: var(--card-bg);
             border-radius: 24px;
-            padding: 40px 24px;
+            padding: 30px 24px;
             box-shadow: 0 8px 24px rgba(74, 62, 61, 0.08);
             text-align: center;
             display: flex;
@@ -46,18 +46,28 @@
         .title {
             font-size: 1.4rem;
             font-weight: bold;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
             letter-spacing: 0.05em;
+        }
+        .illustration-box {
+            width: 180px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+        .illustration-box img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
         }
         .story-card {
             width: 100%;
-            min-height: 160px;
+            min-height: 140px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 1.05rem;
             line-height: 1.7;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
             padding: 10px 5px;
             font-weight: 500;
         }
@@ -118,6 +128,11 @@
 <div class="container">
     <div class="title">アマプラ映画あらすじガチャ</div>
     
+    <div class="illustration-box">
+        <!-- 手書きねこちゃん画像の直リンク -->
+        <img src="https://googleapis.com" alt="ねこちゃん">
+    </div>
+
     <div class="story-card" id="story-text">
         <span class="loading">映画データを読み込み中...</span>
     </div>
@@ -134,52 +149,39 @@
         <span>𝕏 ガチャの結果をシェアする</span>
     </a>
 
+    <!-- 【修正完了】あなたの本物のGoogleフォームにしっかりジャンプするボタン -->
     <a href="https://google.com" target="_blank" class="btn btn-secondary">
         <span>✎ 好きな映画のあらすじを投稿する</span>
     </a>
 </div>
 
-<!-- セキュリティ制限（CORS）を100%回避してデータを読み込めるGoogle公式のスクリプト -->
-<script src="https://google.com"></script>
 <script>
-    // あなたが見つけてくれた本物の公開URLからスプレッドシートのIDを安全に切り抜いたもの
-    const sheetUrl = "https://google.com";
+    // セキュリティ制限（CORS）を完全に無効化してデータを強制的に吸い出す公式のJSONP通信リンク
+    const sheetId = "1NjDui97vdLI6rJXmPGUi8Pz1oU1tBuFKsMocapp6upk";
+    const jsonpUrl = `https://google.com{sheetId}/gviz/tq?tqx=responseHandler:callbackFunc`;
 
     let movies = [];
 
-    // ブラウザのブロックを完全にすり抜けるGoogle公式のデータ読み込み機能
-    google.load("visualization", "1", { packages: ["corechart"] });
-    google.setOnLoadCallback(loadMovies);
+    // データが届いた瞬間に実行される魔法の関数
+    window.callbackFunc = function(data) {
+        try {
+            const rows = data.table.rows;
+            
+            // 見出しの文字を完全にスルーして、A列(0)=タイトル、B列(1)=あらすじ、C列(2)=リンクを強制回収
+            movies = rows.map(row => {
+                const cells = row.c;
+                return {
+                    title: (cells && cells[0]) ? String(cells[0].v) : '',
+                    story: (cells && cells[1]) ? String(cells[1].v) : '',
+                    link: (cells && cells[2]) ? String(cells[2].v) : ''
+                };
+            }).filter(movie => movie.story && movie.story.trim() !== ""); // 空白行は除外
 
-    function loadMovies() {
-        // 見出しの形式や空白に一切邪魔されない、クエリ形式で機械的に読み込み
-        const query = new google.visualization.Query(sheetUrl);
-        query.send(function(response) {
-            if (response.isError()) {
-                console.error(response.getMessage());
-                document.getElementById('story-text').innerText = 'データの連動に失敗しました。時間をおいて再読み込みしてください。';
-                return;
-            }
-
-            const data = response.getDataTable();
-            const rowCount = data.getNumberOfRows();
-
-            for (let i = 0; i < rowCount; i++) {
-                // 列の見出し文字に関係なく、左から0番目(A列)=タイトル、1番目(B列)=あらすじ、2番目(C列)=リンクを強制回収
-                const titleStr = data.getFormattedValue(i, 0);
-                const storyStr = data.getFormattedValue(i, 1);
-                const linkStr = data.getFormattedValue(i, 2);
-
-                if (storyStr && storyStr.trim() !== "") {
-                    movies.push({
-                        title: titleStr,
-                        story: storyStr,
-                        link: linkStr
-                    });
-                }
-            }
-
-            if (movies.length > 0) {
+            // 1行目は見出し（映画のタイトルを教えてね等）なので、2行目以降の本データがあるかチェック
+            if(movies.length > 1) {
+                // 見出し行をガチャの箱から除外する
+                movies.shift();
+                
                 document.getElementById('next-btn').style.display = 'flex';
                 document.getElementById('amazon-btn').style.display = 'flex';
                 document.getElementById('x-btn').style.display = 'flex';
@@ -187,7 +189,17 @@
             } else {
                 document.getElementById('story-text').innerText = '映画データが空っぽです。フォームから追加してください。';
             }
-        });
+        } catch (error) {
+            console.error(error);
+            document.getElementById('story-text').innerText = 'データの解析に失敗しました。';
+        }
+    };
+
+    function loadMovies() {
+        // セキュリティ制限を完全に無効化してデータを強制的に吸い出す特殊なタグを生成
+        const script = document.createElement('script');
+        script.src = jsonpUrl;
+        document.body.appendChild(script);
     }
 
     function drawGacha() {
@@ -216,6 +228,9 @@
     }
 
     document.getElementById('next-btn').addEventListener('click', drawGacha);
+    
+    // 初回読み込み
+    loadMovies();
 </script>
 
 </body>
