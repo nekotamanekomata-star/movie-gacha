@@ -149,37 +149,76 @@
         <span>𝕏 ガチャの結果をシェアする</span>
     </a>
 
-    <!-- 【修正完了】あなたの本物のGoogleフォームにしっかりジャンプするボタン -->
-    <a href="https://google.com" target="_blank" class="btn btn-secondary">
+    <!-- 【今度こそ完全に修正完了！】アスパラベーコンさんが教えてくれた最新の本物フォームのリンク！ -->
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLScRD2arhC8d55o3ng6GmWRBbUMBCT0n1Vlcb0qUKG9cUIaNmg/viewform" target="_blank" class="btn btn-secondary">
         <span>✎ 好きな映画のあらすじを投稿する</span>
     </a>
 </div>
 
 <script>
-    // セキュリティ制限（CORS）を完全に無効化してデータを強制的に吸い出す公式のJSONP通信リンク
-    const sheetId = "1NjDui97vdLI6rJXmPGUi8Pz1oU1tBuFKsMocapp6upk";
-    const jsonpUrl = `https://google.com{sheetId}/gviz/tq?tqx=responseHandler:callbackFunc`;
+    // 最新の本物のウェブ公開CSVリンク（2PACX-1v...を直接合体！）
+    const csvUrl = "https://google.com";
 
     let movies = [];
 
-    // データが届いた瞬間に実行される魔法の関数
-    window.callbackFunc = function(data) {
-        try {
-            const rows = data.table.rows;
-            
-            // 見出しの文字を完全にスルーして、A列(0)=タイトル、B列(1)=あらすじ、C列(2)=リンクを強制回収
-            movies = rows.map(row => {
-                const cells = row.c;
-                return {
-                    title: (cells && cells[0]) ? String(cells[0].v) : '',
-                    story: (cells && cells[1]) ? String(cells[1].v) : '',
-                    link: (cells && cells[2]) ? String(cells[2].v) : ''
-                };
-            }).filter(movie => movie.story && movie.story.trim() !== ""); // 空白行は除外
+    // スプレッドシートの見出し文字を完全無視して、横の順番だけで確実に分解する処理
+    function parseCSV(text) {
+        let lines = [];
+        let row = ["", "", ""];
+        let insideQuote = false;
+        let colIndex = 0;
+        let entry = "";
 
-            // 1行目は見出し（映画のタイトルを教えてね等）なので、2行目以降の本データがあるかチェック
+        for (let i = 0; i < text.length; i++) {
+            let char = text[i];
+            let nextChar = text[i + 1];
+
+            if (char === '"') {
+                if (insideQuote && nextChar === '"') {
+                    entry += '"';
+                    i++;
+                } else {
+                    insideQuote = !insideQuote;
+                }
+            } else if (char === ',' && !insideQuote) {
+                if (colIndex < 3) row[colIndex] = entry.trim();
+                colIndex++;
+                entry = "";
+            } else if ((char === '\r' || char === '\n') && !insideQuote) {
+                if (char === '\r' && nextChar === '\n') i++;
+                if (colIndex < 3) row[colIndex] = entry.trim();
+                
+                if (row || row) {
+                    lines.push({ title: row, story: row, link: row || "" });
+                }
+                row = ["", "", ""];
+                colIndex = 0;
+                entry = "";
+            } else {
+                entry += char;
+            }
+        }
+        if (entry || row || row) {
+            if (colIndex < 3) row[colIndex] = entry.trim();
+            if (row || row) {
+                lines.push({ title: row, story: row, link: row || "" });
+            }
+        }
+        return lines;
+    }
+
+    async function loadMovies() {
+        try {
+            // 新しい公開用リンク（2PACX...）からデータを直接ダウンロード
+            const response = await fetch(csvUrl);
+            if (!response.ok) throw new Error('データ取得エラー');
+            const text = await response.text();
+            
+            movies = parseCSV(text);
+
+            // 1行目は見出しなので、データが2件以上あるかチェック
             if(movies.length > 1) {
-                // 見出し行をガチャの箱から除外する
+                // 見出し行（映画のタイトルを教えてね、等）をガチャの箱から除外する
                 movies.shift();
                 
                 document.getElementById('next-btn').style.display = 'flex';
@@ -191,15 +230,8 @@
             }
         } catch (error) {
             console.error(error);
-            document.getElementById('story-text').innerText = 'データの解析に失敗しました。';
+            document.getElementById('story-text').innerText = 'データの連動に失敗しました。時間をおいて再読み込みしてください。';
         }
-    };
-
-    function loadMovies() {
-        // セキュリティ制限を完全に無効化してデータを強制的に吸い出す特殊なタグを生成
-        const script = document.createElement('script');
-        script.src = jsonpUrl;
-        document.body.appendChild(script);
     }
 
     function drawGacha() {
@@ -228,8 +260,6 @@
     }
 
     document.getElementById('next-btn').addEventListener('click', drawGacha);
-    
-    // 初回読み込み
     loadMovies();
 </script>
 
